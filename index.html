@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chisom's COS 202 Java Master Hub</title>
+<style>
+:root{--bg:#0b1020;--card:#141b31;--card2:#1b2440;--text:#f5f7ff;--muted:#aab3cf;--accent:#7c5cff;--accent2:#21d4a7;--danger:#ff657a;--line:#2b3555}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(135deg,#0b1020,#111832);color:var(--text)}
+button,select{font:inherit}button{cursor:pointer}.wrap{max-width:1150px;margin:auto;padding:22px}
+header{padding:28px 0 16px}.brand{font-size:30px;font-weight:900}.sub{color:var(--muted);margin-top:5px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.nav button,.pill{background:var(--card);border:1px solid var(--line);color:var(--text);padding:11px 15px;border-radius:12px}.nav button.active,.primary{background:var(--accent);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.card{background:rgba(20,27,49,.94);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 8px 30px #0003}.card h3{margin:0 0 7px}.muted{color:var(--muted)}.big{font-size:22px;font-weight:800}.hero{padding:25px;border-radius:22px;background:linear-gradient(135deg,#211b4b,#142b3b);border:1px solid var(--line);margin-bottom:16px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.btn{padding:11px 15px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text)}.btn.primary{background:var(--accent);border-color:var(--accent)}
+.note{margin:10px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}.note summary{padding:14px;background:var(--card2);font-weight:750;cursor:pointer}.note .inside{padding:15px;line-height:1.65;color:#dfe4f5}
+pre{background:#090d18;border:1px solid #27304a;padding:15px;border-radius:12px;overflow:auto;line-height:1.5}.exam{border-left:4px solid var(--accent2);padding:12px 14px;background:#112b2a;border-radius:10px}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}select{width:100%;padding:12px;border-radius:10px;background:#0c1224;color:var(--text);border:1px solid var(--line)}
+.q{padding:18px;border:1px solid var(--line);border-radius:16px;margin:12px 0;background:var(--card)}.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:13px;border-radius:11px;border:1px solid var(--line);background:#10172b;color:var(--text)}.opt.selected{border-color:var(--accent);background:#292052}.correct{border-color:var(--accent2)!important}.wrong{border-color:var(--danger)!important}
+.timer{position:sticky;top:8px;z-index:3;background:#24182a;border:1px solid #4a2b48;padding:10px;border-radius:12px;text-align:center;font-weight:900}.hidden{display:none}.score{font-size:42px;font-weight:900}.small{font-size:13px}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#242d4b;color:#dce2ff;margin:3px}
+.search{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#0c1224;color:white;margin-bottom:15px}
+@media(max-width:600px){.wrap{padding:14px}.brand{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="brand">⚡ Chisom's COS 202 Java Master Hub</div>
+<div class="sub">Study everything • practise anything • test yourself • revise smarter</div>
+</header>
+<div class="nav">
+<button id="homeBtn" class="active" onclick="showPage('home')">Home</button>
+<button onclick="showPage('notes')">📚 Study Notes</button>
+<button onclick="showPage('quizSetup')">📝 Quiz Centre</button>
+<button onclick="showPage('summary')">⚡ Quick Summary</button>
+</div>
+
+<section id="home">
+<div class="hero">
+<h1>Learn → Practise → Submit → Correct → Repeat</h1>
+<p class="muted">A complete revision hub with detailed notes, summaries and flexible quizzes from the whole course, a chapter or a particular topic.</p>
+<div class="actions">
+<button class="btn primary" onclick="showPage('notes')">Start Studying</button>
+<button class="btn" onclick="showPage('quizSetup')">Start a Quiz</button>
+</div>
+</div>
+<div class="grid">
+<div class="card"><div class="big">13</div><div class="muted">course sections</div></div>
+<div class="card"><div class="big">50</div><div class="muted">questions in full-course exam mode</div></div>
+<div class="card"><div class="big">30 min</div><div class="muted">exam timer</div></div>
+<div class="card"><div class="big">Flexible</div><div class="muted">entire course • chapter • topic</div></div>
+</div>
+<div class="card" style="margin-top:15px"><h3>How to use it</h3><p>Read a chapter → open its summary → practise that topic → take a chapter quiz → finish with the entire-course exam.</p><p class="muted small">Your existing 650-question bank is preserved in this version.</p></div>
+</section>
+
+<section id="notes" class="hidden">
+<h2>📚 Study Notes</h2>
+<input class="search" id="noteSearch" placeholder="Search notes, topics or keywords..." oninput="renderNotes()">
+<div id="noteList"></div>
+</section>
+
+<section id="summary" class="hidden">
+<h2>⚡ Quick Summary</h2>
+<div class="grid" id="summaryGrid"></div>
+</section>
+
+<section id="quizSetup" class="hidden">
+<h2>📝 Quiz Centre</h2>
+<div class="card">
+<label>Quiz scope</label>
+<select id="scope" onchange="updateTopicChoices()">
+<option value="all">🌐 Entire Course</option>
+<option value="chapter">📖 Particular Chapter</option>
+<option value="topic">🎯 Particular Topic</option>
+</select>
+<label id="chapterLabel" class="hidden">Choose chapter</label>
+<select id="chapterSelect" class="hidden" onchange="updateTopicChoices()"></select>
+<label id="topicLabel" class="hidden">Choose topic</label>
+<select id="topicSelect" class="hidden"></select>
+<label>Number of questions</label>
+<select id="countSelect">
+<option value="50">50 — Full Exam</option>
+<option value="30">30 — Strong Practice</option>
+<option value="20">20 — Quick Practice</option>
+<option value="10">10 — Mini Test</option>
+</select>
+<div class="actions"><button class="btn primary" onclick="startQuiz()">Start Quiz</button></div>
+<p class="muted small">Full Exam mode uses a 30-minute timer. Answers remain hidden until you submit. Topic quizzes use dedicated topic-specific questions.</p>
+</div>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="timer" id="timer">30:00</div>
+<div class="hero"><h2 id="quizTitle"></h2><div id="progress" class="muted"></div></div>
+<form id="quizForm"></form>
+<div class="actions"><button type="button" class="btn primary" onclick="submitQuiz()">Submit Quiz</button><button type="button" class="btn" onclick="showPage('quizSetup')">Exit</button></div>
+</section>
+
+<section id="results" class="hidden">
+<div class="hero"><div class="muted">RESULT</div><div class="score" id="score"></div><div id="resultText"></div></div>
+<div id="review"></div>
+<div class="actions"><button class="btn primary" onclick="showPage('quizSetup')">New Quiz</button><button class="btn" onclick="showPage('notes')">Study Weak Areas</button></div>
+</section>
+</div>
+
+<script src="questions.js"></script>
+<script src="notes.js"></script>
+<script src="topic_bank.js"></script>
+<script>
+const chapters=window.QUESTION_BANK.chapters;
+let current=[], submitted=false, timerId=null, seconds=1800;
+
+function showPage(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  if(id==='home') document.getElementById('homeBtn').classList.add('active');
+  if(id==='notes') renderNotes();
+  if(id==='summary') renderSummary();
+  if(id==='quizSetup') initSetup();
+  window.scrollTo(0,0);
+}
+function initSetup(){
+  const c=document.getElementById('chapterSelect');
+  if(!c.options.length){
+    Object.entries(chapters||{}).forEach(([id,name])=>c.add(new Option('Chapter '+id+' — '+name,id)));
+  }
+  updateTopicChoices();
+}
+function updateTopicChoices(){
+  const scope=document.getElementById('scope').value;
+  const cl=document.getElementById('chapterLabel'), cs=document.getElementById('chapterSelect');
+  const tl=document.getElementById('topicLabel'), ts=document.getElementById('topicSelect');
+  cl.classList.toggle('hidden',scope==='all');
+  cs.classList.toggle('hidden',scope==='all');
+  tl.classList.toggle('hidden',scope!=='topic');
+  ts.classList.toggle('hidden',scope!=='topic');
+  if(scope==='topic'){
+    const ch=cs.value || Object.keys(chapters||{})[0] || '1';
+    if(!cs.value) cs.value=ch;
+    ts.innerHTML='';
+    const topics=window.DEDICATED_TOPICS?.[ch]||{};
+    Object.keys(topics).forEach(t=>ts.add(new Option(t,t)));
+    if(!ts.options.length){
+      ts.add(new Option('No dedicated topics available',''));
+    }
+  }
+}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function buildPool(){
+  const scope=document.getElementById('scope').value;
+  let pool=[];
+  if(scope==='all'){
+    Object.values(window.QUESTION_BANK.questions).forEach(x=>pool.push(...x));
+  }else if(scope==='chapter'){
+    const ch=document.getElementById('chapterSelect').value;
+    pool=[...(window.QUESTION_BANK.questions[ch]||[])];
+  }else{
+    const ch=document.getElementById('chapterSelect').value;
+    const topic=document.getElementById('topicSelect').value;
+    pool=[...(window.DEDICATED_TOPICS?.[ch]?.[topic]||[])];
+  }
+  return pool;
+}
+function startQuiz(){
+  const n=Number(document.getElementById('countSelect').value);
+  let pool=buildPool();
+  if(!pool.length){alert('No questions matched that selection yet. Try a wider topic or chapter.');return}
+  current=shuffle(pool).slice(0,Math.min(n,pool.length));
+  submitted=false; seconds=1800; clearInterval(timerId);
+  document.getElementById('quizTitle').textContent=
+    document.getElementById('scope').value==='all'?'Entire Course Quiz':
+    document.getElementById('scope').value==='chapter'?chapters[document.getElementById('chapterSelect').value]:
+    document.getElementById('topicSelect').selectedOptions[0].text;
+  renderQuiz(); showPage('quiz'); startTimer();
+}
+function renderQuiz(){
+  const f=document.getElementById('quizForm'); f.innerHTML='';
+  current.forEach((q,i)=>{
+    const box=document.createElement('div');box.className='q';
+    box.innerHTML='<strong>Q'+(i+1)+'. '+htmlEscape(q.q)+'</strong>';
+    q.o.forEach((o,j)=>{
+      const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=String.fromCharCode(65+j)+'. '+o;
+      b.onclick=()=>select(i,j,b);box.appendChild(b);
+    });
+    f.appendChild(box);
+  });
+  document.getElementById('progress').textContent=current.length+' questions • answers locked until submission';
+}
+function select(i,j,b){
+  const box=b.parentElement;box.querySelectorAll('.opt').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');b.dataset.selected='true';
+}
+function submitQuiz(){
+  if(submitted)return;submitted=true;clearInterval(timerId);
+  let score=0,review='';
+  current.forEach((q,i)=>{
+    const box=document.querySelectorAll('.q')[i];
+    const opts=box.querySelectorAll('.opt');
+    let chosen=-1;opts.forEach((o,j)=>{if(o.dataset.selected)chosen=j});
+    opts.forEach((o,j)=>{if(j===q.a)o.classList.add('correct');if(j===chosen&&j!==q.a)o.classList.add('wrong')});
+    if(chosen===q.a)score++;
+    review+=`<div class="card"><h3>Q${i+1}. ${htmlEscape(q.q)}</h3><p><b>Your answer:</b> ${chosen<0?'Not answered':htmlEscape(q.o[chosen])}</p><p><b>Correct answer:</b> ${htmlEscape(q.o[q.a])}</p><p class="muted">${htmlEscape(q.e||'Review the concept in the Study Notes.')}</p></div>`;
+  });
+  document.getElementById('score').textContent=score+' / '+current.length;
+  document.getElementById('resultText').textContent=Math.round(score/current.length*100)+'% — review every missed question below.';
+  document.getElementById('review').innerHTML=review;
+  showPage('results');
+}
+function startTimer(){
+  updateTimer();timerId=setInterval(()=>{seconds--;updateTimer();if(seconds<=0){clearInterval(timerId);submitQuiz()}},1000);
+}
+function updateTimer(){let m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function renderNotes(){
+  const term=(document.getElementById('noteSearch')?.value||'').toLowerCase();
+  const out=document.getElementById('noteList');out.innerHTML='';
+  Object.entries(window.NOTES).forEach(([id,n])=>{
+    const match=!term || (n.title+' '+n.summary+' '+n.topics.map(t=>t[0]+' '+t[1]).join(' ')).toLowerCase().includes(term);
+    if(!match)return;
+    const card=document.createElement('div');card.className='card';card.style.marginBottom='14px';
+    let topics=n.topics.map(t=>`<details class="note"><summary>${htmlEscape(t[0])}</summary><div class="inside">${htmlEscape(t[1])}</div></details>`).join('');
+    card.innerHTML=`<h3>Chapter ${id}: ${htmlEscape(n.title)}</h3><p class="muted">${htmlEscape(n.summary)}</p>${topics}<h4>Important Code</h4><pre>${htmlEscape(n.code)}</pre><div class="exam"><b>Exam Focus:</b> ${htmlEscape(n.exam)}</div><div class="actions"><button class="btn primary" onclick="quickChapter('${id}')">Quiz this chapter</button></div>`;
+    out.appendChild(card);
+  });
+}
+function renderSummary(){
+  const g=document.getElementById('summaryGrid');g.innerHTML='';
+  Object.entries(window.NOTES).forEach(([id,n])=>{
+    const c=document.createElement('div');c.className='card';c.innerHTML=`<h3>Ch ${id} — ${htmlEscape(n.title)}</h3><p class="muted">${htmlEscape(n.summary)}</p><div>${n.topics.slice(0,5).map(t=>`<span class="tag">${htmlEscape(t[0])}</span>`).join('')}</div>`;
+    g.appendChild(c);
+  });
+}
+function quickChapter(id){showPage('quizSetup');setTimeout(()=>{document.getElementById('scope').value='chapter';updateTopicChoices();document.getElementById('chapterSelect').value=id;updateTopicChoices()},0)}
+function htmlEscape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+showPage('home');
+</script>
+</body>
+</html>
