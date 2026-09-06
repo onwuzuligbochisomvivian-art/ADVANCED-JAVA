@@ -19,6 +19,7 @@ label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}select{w
 .timer{position:sticky;top:8px;z-index:3;background:#24182a;border:1px solid #4a2b48;padding:10px;border-radius:12px;text-align:center;font-weight:900}.hidden{display:none}.score{font-size:42px;font-weight:900}.small{font-size:13px}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#242d4b;color:#dce2ff;margin:3px}
 .search{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#0c1224;color:white;margin-bottom:15px}
 @media(max-width:600px){.wrap{padding:14px}.brand{font-size:24px}}
+.question-code{white-space:pre-wrap;overflow:auto;margin:10px 0;padding:12px;border-radius:10px;background:#111;color:#eee;font-size:13px}.code-label{font-weight:700;margin-top:12px}
 </style>
 </head>
 <body>
@@ -84,7 +85,7 @@ label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}select{w
 <option value="10">10 — Mini Test</option>
 </select>
 <div class="actions"><button class="btn primary" onclick="startQuiz()">Start Quiz</button></div>
-<p class="muted small">Full Exam mode uses a 30-minute timer. Answers remain hidden until you submit. Topic quizzes use dedicated topic-specific questions.</p>
+<p class="muted small">Full Exam mode uses a 30-minute timer. Answers remain hidden until you submit. Chapter quizzes use dedicated questions from that chapter's topics; topic quizzes use questions written specifically for that topic. Code-based questions display the code before the options.</p>
 </div>
 </section>
 
@@ -153,7 +154,7 @@ function buildPool(){
     Object.values(window.QUESTION_BANK.questions).forEach(x=>pool.push(...x));
   }else if(scope==='chapter'){
     const ch=document.getElementById('chapterSelect').value;
-    pool=[...(window.QUESTION_BANK.questions[ch]||[])];
+    pool=Object.values(window.DEDICATED_TOPICS?.[ch]||{}).flat();
   }else{
     const ch=document.getElementById('chapterSelect').value;
     const topic=document.getElementById('topicSelect').value;
@@ -177,7 +178,8 @@ function renderQuiz(){
   const f=document.getElementById('quizForm'); f.innerHTML='';
   current.forEach((q,i)=>{
     const box=document.createElement('div');box.className='q';
-    box.innerHTML='<strong>Q'+(i+1)+'. '+htmlEscape(q.q)+'</strong>';
+    let codeBlock=q.code ? `<div class="code-label">Code to trace</div><pre class="question-code">${htmlEscape(q.code)}</pre>` : '';
+    box.innerHTML='<strong>Q'+(i+1)+'. '+htmlEscape(q.q)+'</strong>'+codeBlock;
     q.o.forEach((o,j)=>{
       const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=String.fromCharCode(65+j)+'. '+o;
       b.onclick=()=>select(i,j,b);box.appendChild(b);
@@ -213,11 +215,15 @@ function renderNotes(){
   const term=(document.getElementById('noteSearch')?.value||'').toLowerCase();
   const out=document.getElementById('noteList');out.innerHTML='';
   Object.entries(window.NOTES).forEach(([id,n])=>{
-    const match=!term || (n.title+' '+n.summary+' '+n.topics.map(t=>t[0]+' '+t[1]).join(' ')).toLowerCase().includes(term);
-    if(!match)return;
+    const hay=n.title+' '+n.intro+' '+n.topics.map(t=>t.title+' '+t.explanation+' '+(t.code||'')+' '+(t.example||'')+' '+(t.exam||'')).join(' ');
+    if(term && !hay.toLowerCase().includes(term))return;
     const card=document.createElement('div');card.className='card';card.style.marginBottom='14px';
-    let topics=n.topics.map(t=>`<details class="note"><summary>${htmlEscape(t[0])}</summary><div class="inside">${htmlEscape(t[1])}</div></details>`).join('');
-    card.innerHTML=`<h3>Chapter ${id}: ${htmlEscape(n.title)}</h3><p class="muted">${htmlEscape(n.summary)}</p>${topics}<h4>Important Code</h4><pre>${htmlEscape(n.code)}</pre><div class="exam"><b>Exam Focus:</b> ${htmlEscape(n.exam)}</div><div class="actions"><button class="btn primary" onclick="quickChapter('${id}')">Quiz this chapter</button></div>`;
+    let topics=n.topics.map(t=>{
+      const code=t.code ? `<h4>Example code</h4><pre>${htmlEscape(t.code)}</pre><h4>How the code works</h4><p>${htmlEscape(t.codeExplanation||'Trace the statements in order and connect each line to the concept.')}</p>` : '';
+      const extra=(t.example?`<h4>Example / tracing</h4><p>${htmlEscape(t.example)}</p>`:'')+(t.compare?`<h4>Comparison</h4><p>${htmlEscape(t.compare)}</p>`:'')+(t.complexity?`<h4>Complexity / performance</h4><p>${htmlEscape(t.complexity)}</p>`:'')+(t.exam?`<div class="exam"><b>Exam focus:</b> ${htmlEscape(t.exam)}</div>`:'');
+      return `<details class="note"><summary>${htmlEscape(t.title)}</summary><div class="inside"><p>${htmlEscape(t.explanation)}</p>${code}${extra}</div></details>`;
+    }).join('');
+    card.innerHTML=`<h3>Chapter ${id}: ${htmlEscape(n.title)}</h3><p class="muted">${htmlEscape(n.intro)}</p>${topics}<div class="actions"><button class="btn primary" onclick="quickChapter('${id}')">Quiz this chapter</button></div>`;
     out.appendChild(card);
   });
 }
