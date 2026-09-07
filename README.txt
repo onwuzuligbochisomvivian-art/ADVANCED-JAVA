@@ -1,6 +1,3 @@
-COS 202 Java Master Hub V8
+COS202 Java Master Hub V9
 
-Deep teaching notes + hard topic-specific MCQs.
-Upload these four files together to GitHub Pages: index.html, notes.js, questions.js, topic_bank.js.
-Keep all four from the same V8 build to avoid mixed-version undefined errors.
-The script tags include ?v=8 cache-busting.
+V9 rebuilds the quiz bank so questions test Java behaviour rather than section-number recall. Each topic has 50 questions. Code-heavy topics include substantial code tracing/output/exception questions. Upload index.html, notes.js, questions.js and topic_bank.js together to the GitHub Pages repository root.
