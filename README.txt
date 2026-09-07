@@ -1,3 +1,6 @@
-COS 202 Java Master Hub V7
+COS 202 Java Master Hub V8
 
-Corrected version: teaching-style notes with explanations and topic-level code examples; code-based MCQs display the code they reference before the options; chapter quizzes draw from dedicated topic banks; topic quizzes use dedicated topic questions.
+Deep teaching notes + hard topic-specific MCQs.
+Upload these four files together to GitHub Pages: index.html, notes.js, questions.js, topic_bank.js.
+Keep all four from the same V8 build to avoid mixed-version undefined errors.
+The script tags include ?v=8 cache-busting.
